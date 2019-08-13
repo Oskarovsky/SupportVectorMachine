@@ -1,4 +1,4 @@
-package com.oskarro;
+package main;
 
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 public class Driver extends Application {
 
     public static void main(String[] args) {
-	// write your code here
+        // write your code here
     }
 
     @Override
