@@ -81,7 +81,10 @@ public class Driver extends Application {
 
     public void start(Stage stage) throws Exception {
         Platform.setImplicitExit(false);
-        XYChart.Series<Number, Number> series01 = new XYChart.Series<>();
+        XYChart.Series<Number, Number> notHiredCandidateSeries = new XYChart.Series<>();
+        notHiredCandidateSeries.setName("Candidate Not Hired");
+        XYChart.Series<Number, Number> hiredCandidateSeries = new XYChart.Series<>();
+        hiredCandidateSeries.setName("Candidate Hired");
         stage.show();
     }
 /*
