@@ -21,6 +21,8 @@ import java.util.stream.IntStream;
 
 public class Driver extends Application {
 
+    public SupportVectorMachine svm = new SupportVectorMachine();
+
     private static final double[][][] TRAINING_DATA = {{{9.123456, 3.123456}, {+1}},
             {{9.123456, 5.123456}, {+1}},
             {{5.123456, 5.123456}, {-1}},
