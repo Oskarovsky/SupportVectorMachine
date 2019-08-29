@@ -2,6 +2,8 @@ package com.oskarro;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
 
@@ -99,17 +101,25 @@ public class Driver extends Application {
                     }
                 });*/
 
-        assignData(Driver.TRAINING_DATA, notHiredCandidateSeries, hiredCandidateSeries);
+        assignData(notHiredCandidateSeries, hiredCandidateSeries);
 
+        NumberAxis xAxis = new NumberAxis(0, 10, 1.0);
+        xAxis.setLabel("Score for candidate interview # 1");
+        NumberAxis yAxis = new NumberAxis(0, 10, 1.0);
+        xAxis.setLabel("Score for candidate interview # 2");
+
+        ScatterChart<Number, Number> scatterChart = new ScatterChart<Number, Number>(xAxis, yAxis);
+        scatterChart.getData().add(notHiredCandidateSeries);
+        scatterChart.getData().add(hiredCandidateSeries);
 
         primaryStage.show();
     }
 
-    public void assignData(double[][][] data, XYChart.Series<Number, Number> notHired, XYChart.Series<Number, Number> hired) {
-        IntStream.range(0, data.length)
+    private void assignData(XYChart.Series<Number, Number> notHired, XYChart.Series<Number, Number> hired) {
+        IntStream.range(0, Driver.TRAINING_DATA.length)
                 .forEach(i -> {
-                    double x = data[i][0][0], y = data[i][0][1];
-                    if (data[i][0][0] == -1.0) {
+                    double x = Driver.TRAINING_DATA[i][0][0], y = Driver.TRAINING_DATA[i][0][1];
+                    if (Driver.TRAINING_DATA[i][0][0] == -1.0) {
                         notHired.getData().add(new XYChart.Data<>(x,y));
                     } else {
                         hired.getData().add(new XYChart.Data<>(x,y));
