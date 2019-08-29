@@ -6,6 +6,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.stage.Stage;
+import org.apache.commons.math3.linear.MatrixUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,8 +23,6 @@ import java.util.stream.IntStream;
  */
 
 public class Driver extends Application {
-
-    public SupportVectorMachine svm = new SupportVectorMachine();
 
     // { {xValue, yValue}, {hired(+1)/notHired(-1)} }
     private static final double[][][] TRAINING_DATA = {{{9.123456, 3.123456}, {+1}},
@@ -45,6 +44,8 @@ public class Driver extends Application {
             {{3.123456, 4.123456}, {-1}}};
     private static final double ZERO = 0.000000009;
 
+    private static SupportVectorMachine svm = null;
+
 
     public static void main(String[] args) {
         double[][] xArray = new double[TRAINING_DATA.length][2];
@@ -54,6 +55,7 @@ public class Driver extends Application {
             xArray[i][1] = TRAINING_DATA[i][0][1];
             yArray[i][0] = TRAINING_DATA[i][1][0];
         }
+        svm = new SupportVectorMachine(MatrixUtils.createRealMatrix(xArray), MatrixUtils.createRealMatrix(yArray));
         displayInfoTables(xArray, yArray);
         launch();
     }

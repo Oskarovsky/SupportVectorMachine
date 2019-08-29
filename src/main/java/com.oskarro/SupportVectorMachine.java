@@ -9,11 +9,14 @@ class SupportVectorMachine {
     private static final double EPSILON = 0.001;
 
     private RealMatrix w;
-    private RealMatrix x, y;
+    private RealMatrix x, y;  // x represent features, while y represents labels
     private RealMatrix alpha;
 
     static final double C = 1.0;
     private double b = 0;
+
+    SupportVectorMachine(RealMatrix xValue, RealMatrix yValue) {
+    }
 
 
     private int performSMO() {
