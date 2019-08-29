@@ -92,9 +92,15 @@ class SupportVectorMachine {
     private boolean checkIfAlphaViolatesKKT(double alpha, double e) {
         return (alpha > 0 && Math.abs(e) < EPSILON) || (alpha < C && Math.abs(e) > EPSILON);
     }
-    private double[] boundAlpha(double alphaI, double alphaJ, double yI, double yJ) {
+    private double[] boundAlpha(double alphaForI, double alphaForJ, double yForI, double yForJ) {
         double[] bounds = new double[2];
-
+        if (yForI == alphaForJ) {
+            bounds[0] = Math.max(0, alphaForI + alphaForJ - C);
+            bounds[1] = Math.min(C, alphaForI + alphaForJ);
+        } else {
+            bounds[0] = Math.max(0, alphaForJ - alphaForI);
+            bounds[1] = Math.min(C, alphaForJ - alphaForI + C);
+        }
         return bounds;
     }
 
