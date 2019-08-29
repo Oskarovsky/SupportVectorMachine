@@ -25,6 +25,7 @@ public class Driver extends Application {
 
     public SupportVectorMachine svm = new SupportVectorMachine();
 
+    // { {xValue, yValue}, {hired(+1)/notHired(-1)} }
     private static final double[][][] TRAINING_DATA = {{{9.123456, 3.123456}, {+1}},
             {{9.123456, 5.123456}, {+1}},
             {{5.123456, 5.123456}, {-1}},

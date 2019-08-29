@@ -4,13 +4,15 @@ import org.apache.commons.math3.linear.RealMatrix;
 
 class SupportVectorMachine {
 
-    private RealMatrix x, y;
     private static final double MIN_ALPHA_OPTIMIZATION = 0.00001;
     private static final int MAX_NUMB_OF_ITERATIONS = 50;
-    private RealMatrix alpha;
     private static final double EPSILON = 0.001;
-    static final double C = 1.0;
+
     private RealMatrix w;
+    private RealMatrix x, y;
+    private RealMatrix alpha;
+
+    static final double C = 1.0;
     private double b = 0;
 
 
