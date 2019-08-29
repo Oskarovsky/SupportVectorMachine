@@ -81,14 +81,43 @@ public class Driver extends Application {
         }
     }
 
-    public void start(Stage stage) throws Exception {
+    public void start(Stage primaryStage) throws Exception {
         Platform.setImplicitExit(false);
         XYChart.Series<Number, Number> notHiredCandidateSeries = new XYChart.Series<>();
         notHiredCandidateSeries.setName("Candidate Not Hired");
         XYChart.Series<Number, Number> hiredCandidateSeries = new XYChart.Series<>();
         hiredCandidateSeries.setName("Candidate Hired");
-        stage.show();
+
+/*        IntStream.range(0, Driver.TRAINING_DATA.length)
+                .forEach(i -> {
+                    double x = Driver.TRAINING_DATA[i][0][0], y = Driver.TRAINING_DATA[i][0][1];
+
+                    if (Driver.TRAINING_DATA[i][0][0] == -1.0) {
+                        notHiredCandidateSeries.getData().add(new XYChart.Data<>(x, y));
+                    } else {
+                        hiredCandidateSeries.getData().add(new XYChart.Data<>(x, y));
+                    }
+                });*/
+
+        assignData(Driver.TRAINING_DATA, notHiredCandidateSeries, hiredCandidateSeries);
+
+
+        primaryStage.show();
     }
+
+    public void assignData(double[][][] data, XYChart.Series<Number, Number> notHired, XYChart.Series<Number, Number> hired) {
+        IntStream.range(0, data.length)
+                .forEach(i -> {
+                    double x = data[i][0][0], y = data[i][0][1];
+                    if (data[i][0][0] == -1.0) {
+                        notHired.getData().add(new XYChart.Data<>(x,y));
+                    } else {
+                        hired.getData().add(new XYChart.Data<>(x,y));
+                    }
+                });
+    }
+
+
 /*
     private static void displayInfoTables(double[][] xArray, double[][] yArray) {
         System.out.println("    Support Vector    |  label  |  alpha");
@@ -97,10 +126,7 @@ public class Driver extends Application {
         for (int i=0; i<xArray.length; i++) {
         }
     }
-
-    private static void handleCommandLine() throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
-    }*/
+*/
 
 }
 

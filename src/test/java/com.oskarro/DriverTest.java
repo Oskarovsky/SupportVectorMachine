@@ -1,6 +1,7 @@
 package com.oskarro;
 
 import javafx.stage.Stage;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit.ApplicationTest;
 
@@ -14,6 +15,10 @@ public class DriverTest extends ApplicationTest {
         stage.toFront();
     }
 
+    @Before
+    public void setUp() throws Exception {
+
+    }
 
     @Test
     void main() {
