@@ -33,6 +33,7 @@ class SupportVectorMachine {
                 i = 0;
             }
         }
+        w = calcW();
     }
 
 
@@ -136,11 +137,6 @@ class SupportVectorMachine {
         }
         return bounds;
     }
-
-/*    private RealMatrix calcW() {
-
-    }*/
-
     private int selectIndexOf2ndAlphaToOptimize(int indexOf1stAlpha, int numbOfRows) {
         int indexOf2ndAlpha = indexOf1stAlpha;
         while (indexOf1stAlpha==indexOf2ndAlpha) {

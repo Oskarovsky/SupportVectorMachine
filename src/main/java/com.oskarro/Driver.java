@@ -2,15 +2,19 @@ package com.oskarro;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.apache.commons.math3.linear.MatrixUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 /**
@@ -42,6 +46,7 @@ public class Driver extends Application {
             {{6.923456, 4.623456}, {-1}},
             {{8.123456, 5.123456}, {+1}},
             {{3.123456, 4.123456}, {-1}}};
+
     private static final double ZERO = 0.000000009;
 
     private static SupportVectorMachine svm = null;
@@ -64,12 +69,20 @@ public class Driver extends Application {
         System.out.println("     Support Vector   | label | alpha");
         IntStream.range(0, 50).forEach(i -> System.out.print("-"));
         System.out.println();
-        for (int i=0; i<xArray.length; i++) {
-
+        for (int i = 0; i < xArray.length; i++) {
+            if (svm.getAlpha().getData()[i][0] > ZERO && svm.getAlpha().getData()[i][0] != SupportVectorMachine.C) {
+                StringBuilder yValueInString = new StringBuilder(String.valueOf(yArray[i][0]));
+                yValueInString.setLength(5);
+                System.out.println(Arrays.toString(xArray[i]) +" | "+ yValueInString +" | "+
+                        new String(String.format("%.10f", svm.getAlpha().getData()[i][0])));
+            }
         }
+        System.out.println("\n             wT              |  b  ");
+        IntStream.range(0, 50).forEach(i -> System.out.print("-")); System.out.println();
+        System.out.println("<"+ (new String(String.format("%.9f", svm.getW().getData()[0][0])) + ", "
+                +  new String(String.format("%.9f", svm.getW().getData()[1][0]))) +">   | "+svm.getB());
     }
-
-    public static void handleCommandLine() throws IOException {
+    private static void handleCommandLine() throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             System.out.println("\n> to classify new candidate enter scores for interviews 1 & 2 (or exit):");
@@ -93,17 +106,6 @@ public class Driver extends Application {
         XYChart.Series<Number, Number> hiredCandidateSeries = new XYChart.Series<>();
         hiredCandidateSeries.setName("Candidate Hired");
 
-/*        IntStream.range(0, Driver.TRAINING_DATA.length)
-                .forEach(i -> {
-                    double x = Driver.TRAINING_DATA[i][0][0], y = Driver.TRAINING_DATA[i][0][1];
-
-                    if (Driver.TRAINING_DATA[i][0][0] == -1.0) {
-                        notHiredCandidateSeries.getData().add(new XYChart.Data<>(x, y));
-                    } else {
-                        hiredCandidateSeries.getData().add(new XYChart.Data<>(x, y));
-                    }
-                });*/
-
         assignData(notHiredCandidateSeries, hiredCandidateSeries);
 
         NumberAxis xAxis = new NumberAxis(0, 10, 1.0);
@@ -115,6 +117,23 @@ public class Driver extends Application {
         scatterChart.getData().add(notHiredCandidateSeries);
         scatterChart.getData().add(hiredCandidateSeries);
 
+        double m = -(svm.getW().getData()[0][0]/svm.getW().getData()[1][0]);
+        double b = -(svm.getB()/svm.getW().getData()[1][0]);
+        double score1X = 0.00, score1Y = m*score1X + b, score2X = 10.00, score2Y = m*score2X + b;
+
+        XYChart.Series<Number, Number> candidateSeriesInResult = new XYChart.Series<Number, Number>();
+        candidateSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score1X, score1Y));
+        candidateSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score2X, score2Y));
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        lineChart.getData().add(candidateSeriesInResult);
+        lineChart.setOpacity(0.4);
+
+        Pane pane = new Pane();
+        pane.getChildren().addAll(scatterChart, lineChart);
+        primaryStage.setScene(new Scene(pane, 550, 420));
+        primaryStage.setOnHidden(e -> {try { handleCommandLine();} catch (Exception e1) { e1.printStackTrace();}});
+        System.out.println("\nClose display window to proceed");
+        primaryStage.setTitle("Support Vector Machines (01) - w/ SMO (Sequential Minimal Optimization)");
         primaryStage.show();
     }
 
@@ -129,17 +148,6 @@ public class Driver extends Application {
                     }
                 });
     }
-
-
-/*
-    private static void displayInfoTables(double[][] xArray, double[][] yArray) {
-        System.out.println("    Support Vector    |  label  |  alpha");
-        IntStream.range(0, 50).forEach(i -> System.out.print("-"));
-        System.out.println();
-        for (int i=0; i<xArray.length; i++) {
-        }
-    }
-*/
 
 }
 
