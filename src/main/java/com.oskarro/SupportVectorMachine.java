@@ -87,7 +87,14 @@ class SupportVectorMachine {
 
     private boolean optimizeAlphaPair(int i, int j, double Ei, double Ej, double ETA,
                                       double[] bounds, double alphaIold, double alphaJold) {
-     return true;
+        boolean flag = false;
+        alpha.setEntry(j, 0, alpha.getEntry(j, 0) - yValue.getEntry(j, 0) * (Ei-Ej)/ETA);
+        clipAlphaJ(j, bounds[1], bounds[0]);
+        if (Math.abs(alpha.getEntry(j, 0) - alphaJold) >= MIN_ALPHA_OPTIMIZATION) {
+            optimizeAlphaISameAsAlphaJOppositeDirection(i, j, alphaJold);
+            flag = true;
+        }
+     return flag;
     }
 
     private  void optimizeAlphaISameAsAlphaJOppositeDirection(int i, int j, double alphaJold) {
