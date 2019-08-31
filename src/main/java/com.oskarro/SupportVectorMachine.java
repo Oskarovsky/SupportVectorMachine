@@ -98,11 +98,23 @@ class SupportVectorMachine {
     }
 
     private  void optimizeAlphaISameAsAlphaJOppositeDirection(int i, int j, double alphaJold) {
-
+        alpha.setEntry(i, 0,alpha.getEntry(i, 0) + yValue.getEntry(j, 0)
+                    * yValue.getEntry(i, 0)
+                    * (alphaJold -alpha.getEntry(j, 0)));
     }
 
-    private  void optimizeB(double Ei, double Ej, double Iold, double alphaJold, int i, int j) {
-
+    private  void optimizeB(double Ei, double Ej, double alphaIold, double alphaJold, int i, int j) {
+        double b1 = b - Ei - multiplyItems(yValue.getRowMatrix(i), alpha.getRowMatrix(i).scalarAdd(-alphaIold)).
+                multiply(xValue.getRowMatrix(i).multiply(xValue.getRowMatrix(i).transpose())).getEntry(0, 0)
+                - multiplyItems(yValue.getRowMatrix(j), alpha.getRowMatrix(j).scalarAdd(-alphaJold)).
+                multiply(xValue.getRowMatrix(i).multiply(xValue.getRowMatrix(j).transpose())).getEntry(0, 0);
+        double b2 = b - Ej - multiplyItems(yValue.getRowMatrix(i), alpha.getRowMatrix(i).scalarAdd(-alphaIold)).
+                multiply(xValue.getRowMatrix(i).multiply(xValue.getRowMatrix(j).transpose())).getEntry(0, 0)
+                - multiplyItems(yValue.getRowMatrix(j), alpha.getRowMatrix(j).scalarAdd(-alphaJold)).
+                multiply(xValue.getRowMatrix(j).multiply(xValue.getRowMatrix(j).transpose())).getEntry(0, 0);
+        if (0 < alpha.getRowMatrix(i).getEntry(0, 0) && C > alpha.getRowMatrix(i).getEntry(0, 0)) b = b1;
+        else if (0 < alpha.getRowMatrix(j).getEntry(0, 0) && C > alpha.getRowMatrix(j).getEntry(0, 0)) b = b2;
+        else b = (b1 + b2) / 2.0;
     }
 
     private void clipAlphaJ(int i, double highBound, double lowBound) {
