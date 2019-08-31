@@ -117,8 +117,9 @@ class SupportVectorMachine {
         else b = (b1 + b2) / 2.0;
     }
 
-    private void clipAlphaJ(int i, double highBound, double lowBound) {
-
+    private void clipAlphaJ(int j, double highBound, double lowBound) {
+        if (alpha.getEntry(j, 0) < lowBound) alpha.setEntry(j, 0, lowBound);
+        if (alpha.getEntry(j, 0) > highBound) alpha.setEntry(j, 0, highBound);
     }
 
     private boolean checkIfAlphaViolatesKKT(double alpha, double e) {
@@ -148,13 +149,23 @@ class SupportVectorMachine {
         return indexOf2ndAlpha;
     }
 
-/*    String classify(RealMatrix entry) {
-
+    private RealMatrix calcW() {
+        double[][] wArray = new double[xValue.getData()[0].length][1];
+        IntStream.range(0, wArray.length).forEach(i -> wArray[i][0] = 0.0);
+        RealMatrix w = MatrixUtils.createRealMatrix(wArray);
+        for (int i = 0; i < xValue.getData().length; i++)
+            w = w.add(xValue.getRowMatrix(i).transpose()
+                    .scalarMultiply(yValue.getRowMatrix(i).multiply(alpha.getRowMatrix(i)).getEntry(0, 0)));
+        return w;
     }
 
-    private static RealMatrix mult(RealMatrix matrix1, RealMatrix matrix2) {
+    String classify(RealMatrix entry) {
+        String classification =  "classified as -1 (will not be hired prediction)";
+        if ( Math.signum(entry.multiply(w).getEntry(0, 0)+ b) == 1)
+            classification = "classified as 1 (will be hired prediction)";
+        return classification;
+    }
 
-    }*/
 
     RealMatrix getAlpha() { return alpha; }
     RealMatrix getW() { return w; }
