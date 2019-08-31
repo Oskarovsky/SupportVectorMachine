@@ -49,16 +49,29 @@ class SupportVectorMachine {
             if (checkIfAlphaViolatesKKT(alpha.getEntry(i, 0), Ei.getEntry(0, 0))) {
                 // here we calculate the error for the second alpha (the value of error)
                 int j = selectIndexOf2ndAlphaToOptimize(i, xValue.getData().length);
+
                 RealMatrix Ej = multiplyItems(yValue, alpha)
                         .transpose()
                         .multiply(xValue.multiply(xValue.getRowMatrix(j).transpose()))
                         .scalarAdd(b)
                         .subtract(yValue.getRowMatrix(j));
+
                 double alphaIOld = alpha.getRowMatrix(i).getEntry(0, 0);
                 double alphaJOld = alpha.getRowMatrix(j).getEntry(0, 0);
                 double[] bounds = boundAlpha(alpha.getEntry(i, 0), alpha.getEntry(j, 0),
                         yValue.getEntry(i, 0), yValue.getEntry(j, 0));
 
+                // ETA is an optimal amount to change a second alpha
+                double ETA = xValue.getRowMatrix(i).multiply(xValue.getRowMatrix(j).transpose()).scalarMultiply(2.0).getEntry(0,0)
+                            -xValue.getRowMatrix(i).multiply(xValue.getRowMatrix(i).transpose()).getEntry(0,0)
+                            -xValue.getRowMatrix(j).multiply(xValue.getRowMatrix(j).transpose()).getEntry(0, 0);
+
+                if (bounds[0] != bounds[1] && ETA < 0) {
+                    if (optimizeAlphaPair(i, j, Ei.getEntry(0, 0), Ej.getEntry(0, 0), ETA, bounds, alphaIOld, alphaJOld)) {
+                        optimizeB(Ei.getEntry(0, 0), Ej.getEntry(0 , 0), alphaIOld, alphaJOld, i, j);
+                        numberOfAlphaPairsOptimized += 1;
+                    }
+                }
             }
         }
         return numberOfAlphaPairsOptimized;
