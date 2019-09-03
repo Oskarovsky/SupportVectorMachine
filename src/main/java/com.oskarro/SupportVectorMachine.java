@@ -161,9 +161,9 @@ class SupportVectorMachine {
     }
 
     String classify(RealMatrix entry) {
-        String classification =  "classified as -1 (will not be hired prediction)";
+        String classification =  "classified as -1 (will not be passed prediction)";
         if ( Math.signum(entry.multiply(w).getEntry(0, 0)+ b) == 1)
-            classification = "classified as 1 (will be hired prediction)";
+            classification = "classified as 1 (will be passed prediction)";
         return classification;
     }
 

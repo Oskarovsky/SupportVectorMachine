@@ -107,37 +107,37 @@ public class Driver extends Application {
 
     public void start(Stage primaryStage) throws Exception {
         Platform.setImplicitExit(false);
-        XYChart.Series<Number, Number> notHiredCandidateSeries = new XYChart.Series<Number, Number>();
-        notHiredCandidateSeries.setName("Candidate Not Hired");
-        XYChart.Series<Number, Number> hiredCandidateSeries = new XYChart.Series<Number, Number>();
-        hiredCandidateSeries.setName("Candidate Hired");
+        XYChart.Series<Number, Number> notPassedStudentSeries = new XYChart.Series<Number, Number>();
+        notPassedStudentSeries.setName("Student not passed");
+        XYChart.Series<Number, Number> passedStudentSeries = new XYChart.Series<Number, Number>();
+        passedStudentSeries.setName("Student passed");
 
         IntStream.range(0, Driver.TRAINING_DATA.length).forEach(i -> {
             double x = Driver.TRAINING_DATA[i][0][0], y = Driver.TRAINING_DATA[i][0][1];
             if (Driver.TRAINING_DATA[i][1][0] == -1.0)
-                notHiredCandidateSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
-            else hiredCandidateSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
+                notPassedStudentSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
+            else passedStudentSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
         });
 
         NumberAxis xAxis = new NumberAxis(0, 10, 1.0);
-        xAxis.setLabel("Score for candidate interview # 1");
+        xAxis.setLabel("Score for student exam # 1");
         NumberAxis yAxis = new NumberAxis(0, 10, 1.0);
-        yAxis.setLabel("Score for candidate interview # 2");
+        yAxis.setLabel("Score for student exam # 2");
 
         ScatterChart<Number, Number> scatterChart = new ScatterChart<Number, Number>(xAxis, yAxis);
-        scatterChart.getData().add(notHiredCandidateSeries);
-        scatterChart.getData().add(hiredCandidateSeries);
+        scatterChart.getData().add(notPassedStudentSeries);
+        scatterChart.getData().add(passedStudentSeries);
 
         double m = -(svm.getW().getData()[0][0]/svm.getW().getData()[1][0]);
         double b = -(svm.getB()/svm.getW().getData()[1][0]);
         double score1X = 0.00, score1Y = m*score1X + b, score2X = 10.00, score2Y = m*score2X + b;
 
-        XYChart.Series<Number, Number> candidateSeriesInResult = new XYChart.Series<Number, Number>();
-        candidateSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score1X, score1Y));
-        candidateSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score2X, score2Y));
+        XYChart.Series<Number, Number> studentSeriesInResult = new XYChart.Series<Number, Number>();
+        studentSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score1X, score1Y));
+        studentSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score2X, score2Y));
 
         LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
-        lineChart.getData().add(candidateSeriesInResult);
+        lineChart.getData().add(studentSeriesInResult);
         lineChart.setOpacity(0.4);
 
         Pane pane = new Pane();
@@ -155,15 +155,4 @@ public class Driver extends Application {
         primaryStage.show();
     }
 
-    private void assignData(XYChart.Series<Number, Number> notHired, XYChart.Series<Number, Number> hired) {
-        IntStream.range(0, Driver.TRAINING_DATA.length)
-                .forEach(i -> {
-                    double x = Driver.TRAINING_DATA[i][0][0], y = Driver.TRAINING_DATA[i][0][1];
-                    if (Driver.TRAINING_DATA[i][0][0] == -1.0) {
-                        notHired.getData().add(new XYChart.Data<>(x,y));
-                    } else {
-                        hired.getData().add(new XYChart.Data<>(x,y));
-                    }
-                });
-    }
 }
