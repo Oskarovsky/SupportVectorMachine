@@ -22,9 +22,11 @@ class SupportVectorMachine {
     SupportVectorMachine(RealMatrix xValue, RealMatrix yValue) {
         this.xValue = xValue;
         this.yValue = yValue;
+
         double[] alphaArray = new double[xValue.getData().length];
         IntStream.range(0, alphaArray.length).forEach(i -> alphaArray[i] = 0);
         alpha = MatrixUtils.createColumnRealMatrix(alphaArray);
+
         int i=0;
         while (i < MAX_NUMB_OF_ITERATIONS) {
             if (performSMO() == 0) {
@@ -78,13 +80,6 @@ class SupportVectorMachine {
         return numberOfAlphaPairsOptimized;
     }
 
-    private static RealMatrix multiplyItems(RealMatrix matrix1, RealMatrix matrix2) {
-        double[][] returnData = new double[matrix1.getData().length][matrix1.getData()[0].length];
-        IntStream.range(0, matrix1.getData().length).forEach(r ->
-                IntStream.range(0, matrix1.getData()[0].length).forEach(c ->
-                        returnData[r][c] = matrix1.getEntry(r, c) * matrix2.getEntry(r, c)));
-        return MatrixUtils.createRealMatrix(returnData);
-    }
 
     private boolean optimizeAlphaPair(int i, int j, double Ei, double Ej, double ETA,
                                       double[] bounds, double alphaIold, double alphaJold) {
@@ -101,7 +96,7 @@ class SupportVectorMachine {
     private  void optimizeAlphaISameAsAlphaJOppositeDirection(int i, int j, double alphaJold) {
         alpha.setEntry(i, 0,alpha.getEntry(i, 0) + yValue.getEntry(j, 0)
                     * yValue.getEntry(i, 0)
-                    * (alphaJold -alpha.getEntry(j, 0)));
+                    * (alphaJold - alpha.getEntry(j, 0)));
     }
 
     private  void optimizeB(double Ei, double Ej, double alphaIold, double alphaJold, int i, int j) {
@@ -126,9 +121,10 @@ class SupportVectorMachine {
     private boolean checkIfAlphaViolatesKKT(double alpha, double e) {
         return (alpha > 0 && Math.abs(e) < EPSILON) || (alpha < C && Math.abs(e) > EPSILON);
     }
+
     private double[] boundAlpha(double alphaForI, double alphaForJ, double yForI, double yForJ) {
         double[] bounds = new double[2];
-        if (yForI == alphaForJ) {
+        if (yForI == yForJ) {
             bounds[0] = Math.max(0, alphaForI + alphaForJ - C);
             bounds[1] = Math.min(C, alphaForI + alphaForJ);
         } else {
@@ -137,6 +133,7 @@ class SupportVectorMachine {
         }
         return bounds;
     }
+
     private int selectIndexOf2ndAlphaToOptimize(int indexOf1stAlpha, int numbOfRows) {
         int indexOf2ndAlpha = indexOf1stAlpha;
         while (indexOf1stAlpha==indexOf2ndAlpha) {
@@ -153,6 +150,14 @@ class SupportVectorMachine {
             w = w.add(xValue.getRowMatrix(i).transpose()
                     .scalarMultiply(yValue.getRowMatrix(i).multiply(alpha.getRowMatrix(i)).getEntry(0, 0)));
         return w;
+    }
+
+    private static RealMatrix multiplyItems(RealMatrix matrix1, RealMatrix matrix2) {
+        double[][] returnData = new double[matrix1.getData().length][matrix1.getData()[0].length];
+        IntStream.range(0, matrix1.getData().length).forEach(r ->
+                IntStream.range(0, matrix1.getData()[0].length).forEach(c ->
+                        returnData[r][c] = matrix1.getEntry(r, c) * matrix2.getEntry(r, c)));
+        return MatrixUtils.createRealMatrix(returnData);
     }
 
     String classify(RealMatrix entry) {

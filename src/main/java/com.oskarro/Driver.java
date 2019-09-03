@@ -21,10 +21,14 @@ import java.util.stream.IntStream;
  * The SupportVectorMachine program implements an application
  * that simply handles machine learning based on SVM
  *
+ * This application presents the events when students want to
+ * pass the exam. This SVM algorithm decide if students passed or not
+ *
  * @author  Oskar Slyk
  * @version 1.0
  * @since   2019-08-13
  */
+
 
 public class Driver extends Application {
 
@@ -50,7 +54,6 @@ public class Driver extends Application {
     private static final double ZERO = 0.000000009;
 
     private static SupportVectorMachine svm = null;
-
 
     public static void main(String[] args) {
         double[][] xArray = new double[TRAINING_DATA.length][2];
@@ -78,20 +81,23 @@ public class Driver extends Application {
             }
         }
         System.out.println("\n             wT              |  b  ");
-        IntStream.range(0, 50).forEach(i -> System.out.print("-")); System.out.println();
+        IntStream.range(0, 50).forEach(i -> System.out.print("-"));
+        System.out.println();
         System.out.println("<"+ (new String(String.format("%.9f", svm.getW().getData()[0][0])) + ", "
                 +  new String(String.format("%.9f", svm.getW().getData()[1][0]))) +">   | "+svm.getB());
     }
+
     private static void handleCommandLine() throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
-            System.out.println("\n> to classify new candidate enter scores for interviews 1 & 2 (or exit):");
+            System.out.println("\n> to classify students enter scores for exams 1 & 2 (or exit):");
             String[] values = (bufferedReader.readLine()).split(" ");
             if (values[0].equals("exit"))
                 System.exit(0);
             else {
                 try {
                     System.out.println();
+                    svm.classify(MatrixUtils.createRealMatrix(new double[][] {{ Double.parseDouble(values[0]), Double.parseDouble(values[1])}}));
                 } catch (Exception e) {
                     System.out.println("invalid input");
                 }
@@ -101,17 +107,22 @@ public class Driver extends Application {
 
     public void start(Stage primaryStage) throws Exception {
         Platform.setImplicitExit(false);
-        XYChart.Series<Number, Number> notHiredCandidateSeries = new XYChart.Series<>();
+        XYChart.Series<Number, Number> notHiredCandidateSeries = new XYChart.Series<Number, Number>();
         notHiredCandidateSeries.setName("Candidate Not Hired");
-        XYChart.Series<Number, Number> hiredCandidateSeries = new XYChart.Series<>();
+        XYChart.Series<Number, Number> hiredCandidateSeries = new XYChart.Series<Number, Number>();
         hiredCandidateSeries.setName("Candidate Hired");
 
-        assignData(notHiredCandidateSeries, hiredCandidateSeries);
+        IntStream.range(0, Driver.TRAINING_DATA.length).forEach(i -> {
+            double x = Driver.TRAINING_DATA[i][0][0], y = Driver.TRAINING_DATA[i][0][1];
+            if (Driver.TRAINING_DATA[i][1][0] == -1.0)
+                notHiredCandidateSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
+            else hiredCandidateSeries.getData().add(new XYChart.Data<Number, Number>(x, y));
+        });
 
         NumberAxis xAxis = new NumberAxis(0, 10, 1.0);
         xAxis.setLabel("Score for candidate interview # 1");
         NumberAxis yAxis = new NumberAxis(0, 10, 1.0);
-        xAxis.setLabel("Score for candidate interview # 2");
+        yAxis.setLabel("Score for candidate interview # 2");
 
         ScatterChart<Number, Number> scatterChart = new ScatterChart<Number, Number>(xAxis, yAxis);
         scatterChart.getData().add(notHiredCandidateSeries);
@@ -124,14 +135,21 @@ public class Driver extends Application {
         XYChart.Series<Number, Number> candidateSeriesInResult = new XYChart.Series<Number, Number>();
         candidateSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score1X, score1Y));
         candidateSeriesInResult.getData().add(new XYChart.Data<Number, Number>(score2X, score2Y));
-        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
+
+        LineChart<Number, Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
         lineChart.getData().add(candidateSeriesInResult);
         lineChart.setOpacity(0.4);
 
         Pane pane = new Pane();
         pane.getChildren().addAll(scatterChart, lineChart);
         primaryStage.setScene(new Scene(pane, 550, 420));
-        primaryStage.setOnHidden(e -> {try { handleCommandLine();} catch (Exception e1) { e1.printStackTrace();}});
+        primaryStage.setOnHidden(e -> {
+            try {
+                handleCommandLine();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        });
         System.out.println("\nClose display window to proceed");
         primaryStage.setTitle("Support Vector Machines (01) - w/ SMO (Sequential Minimal Optimization)");
         primaryStage.show();
@@ -148,8 +166,4 @@ public class Driver extends Application {
                     }
                 });
     }
-
 }
-
-
-
