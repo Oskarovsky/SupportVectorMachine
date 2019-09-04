@@ -160,7 +160,7 @@ class SupportVectorMachine {
         return MatrixUtils.createRealMatrix(returnData);
     }
 
-    String classify(RealMatrix entry) {
+    public String classify(RealMatrix entry) {
         String classification =  "classified as -1 (will not be passed prediction)";
         if ( Math.signum(entry.multiply(w).getEntry(0, 0)+ b) == 1)
             classification = "classified as 1 (will be passed prediction)";

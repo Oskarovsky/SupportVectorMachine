@@ -96,8 +96,9 @@ public class Driver extends Application {
                 System.exit(0);
             else {
                 try {
-                    System.out.println();
-                    svm.classify(MatrixUtils.createRealMatrix(new double[][] {{ Double.parseDouble(values[0]), Double.parseDouble(values[1])}}));
+                    System.out.println(
+                        svm.classify(MatrixUtils.createRealMatrix(
+                                new double[][] {{ Double.parseDouble(values[0]), Double.parseDouble(values[1])}})));
                 } catch (Exception e) {
                     System.out.println("invalid input");
                 }
