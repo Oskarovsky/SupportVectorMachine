@@ -32,24 +32,25 @@ import java.util.stream.IntStream;
 
 public class Driver extends Application {
 
-    // { {xValue, yValue}, {hired(+1)/notHired(-1)} }
-    private static final double[][][] TRAINING_DATA = {{{9.123456, 3.123456}, {+1}},
+    // { {xValue, yValue}, {passed(+1)/notPassed(-1)} }
+    private static final double[][][] TRAINING_DATA =
+            {{{9.123456, 3.123456}, {+1}},
             {{9.123456, 5.123456}, {+1}},
             {{5.123456, 5.123456}, {-1}},
             {{8.123456, 6.654321}, {+1}},
             {{4.654321, 4.123456}, {-1}},
             {{2.123456, 4.123456}, {-1}},
-            {{9.123456, 7.123456}, {+1}},
+            {{6.123456, 7.123456}, {+1}},
             {{4.123456, 4.654321}, {-1}},
             {{8.654321, 2.123456}, {+1}},
-            {{2.123456, 2.123456}, {-1}},
+            {{1.123456, 2.123456}, {-1}},
             {{3.123456, 3.123456}, {-1}},
             {{8.654321, 4.123456}, {+1}},
-            {{7.123456, 6.123456}, {+1}},
+            {{9.123456, 6.123456}, {+1}},
             {{4.123456, 7.123456}, {-1}},
             {{6.923456, 4.623456}, {-1}},
             {{8.123456, 5.123456}, {+1}},
-            {{3.123456, 4.123456}, {-1}}};
+            {{1.123456, 4.123456}, {-1}}};
 
     private static final double ZERO = 0.000000009;
 
@@ -63,24 +64,30 @@ public class Driver extends Application {
             xArray[i][1] = TRAINING_DATA[i][0][1];
             yArray[i][0] = TRAINING_DATA[i][1][0];
         }
+
         svm = new SupportVectorMachine(MatrixUtils.createRealMatrix(xArray), MatrixUtils.createRealMatrix(yArray));
         displayInfoTables(xArray, yArray);
         launch();
     }
 
     private static void displayInfoTables(double[][] xArray, double[][] yArray) {
-        System.out.println("     Support Vector   | label | alpha");
+        System.out.println("     Wektor nośny   | klasa | alpha");
         IntStream.range(0, 50).forEach(i -> System.out.print("-"));
         System.out.println();
         for (int i = 0; i < xArray.length; i++) {
             if (svm.getAlpha().getData()[i][0] > ZERO && svm.getAlpha().getData()[i][0] != SupportVectorMachine.C) {
                 StringBuilder yValueInString = new StringBuilder(String.valueOf(yArray[i][0]));
-                yValueInString.setLength(5);
+                if (yValueInString.charAt(0) == '1') {
+                    yValueInString.setLength(1);
+                    yValueInString.insert(0, " ");
+                } else {
+                    yValueInString.setLength(2);
+                }
                 System.out.println(Arrays.toString(xArray[i]) +" | "+ yValueInString +" | "+
                         new String(String.format("%.10f", svm.getAlpha().getData()[i][0])));
             }
         }
-        System.out.println("\n             wT              |  b  ");
+        System.out.println("\n             wT              |value of b  ");
         IntStream.range(0, 50).forEach(i -> System.out.print("-"));
         System.out.println();
         System.out.println("<"+ (new String(String.format("%.9f", svm.getW().getData()[0][0])) + ", "
@@ -152,7 +159,7 @@ public class Driver extends Application {
             }
         });
         System.out.println("\nClose display window to proceed");
-        primaryStage.setTitle("Support Vector Machines (01) - w/ SMO (Sequential Minimal Optimization)");
+        primaryStage.setTitle("Support Vector Machine - Oskar Słyk");
         primaryStage.show();
     }
 
